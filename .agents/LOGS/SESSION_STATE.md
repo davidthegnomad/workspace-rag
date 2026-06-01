@@ -1,26 +1,21 @@
 # Session State
 > Last updated: 2026-06-01
 
-## Done this session
-- Installed `gcloud` CLI via Homebrew
-- Service-account auth (no browser login)
-- Hardened `.gitignore`, committed + pushed
-- Smoke-tested Firestore writes (indexing works)
-- **Full index running in background** — see `.agents/LOGS/index-run.log`
+## Status: OPERATIONAL (local MacBook mode)
 
-## In progress
-- `python3 internal/cli.py index` — PID in `.agents/LOGS/index-run.pid`
-- ~8790 documents; expect hours on local Ollama
+- Search: working via `scripts/rag-search.sh`
+- Index: background job may still be running — check `scripts/rag-status.sh`
+- Deployment: **local** until Tailscale + vault (see ROADMAP.md Phase 1–2)
 
-## Blocked (needs one GCP IAM action)
-- Firestore **vector index** creation failed: service account lacks `datastore.indexAdmin`
-- Indexing works without it; **search will not work** until vector index exists
-- Fix: GCP Console → IAM → `firebase-adminsdk-fbsvc@gnomad-studio-client.iam.gserviceaccount.com` → add role **Cloud Datastore Index Admin** (`roles/datastore.indexAdmin`), then re-run `./internal/firebase/setup-index.sh`
-- Or: Firestore → Indexes → create vector index on `workspace_rag_internal.embedding` (768 dims)
+## New this session
+- `docs/DEPLOYMENT.md` — local now, vault/Ryzen scheduled index later (no 24/7 watch)
+- `ROADMAP.md` — orchestrator pickup target (phases 0–5)
+- `scripts/rag-search.sh`, `rag-index.sh`, `rag-status.sh` — `RAG_MODE=local` default
 
-## Commands
-```bash
-tail -f .agents/LOGS/index-run.log
-python3 internal/cli.py status
-kill $(cat .agents/LOGS/index-run.pid)   # stop index if needed
-```
+## Orchestrator
+- Query: `02_ai_engineering/workspace-rag/scripts/rag-search.sh "<question>"`
+- Pickup: `02_ai_engineering/workspace-rag/ROADMAP.md`
+
+## Next (human / infra gates)
+- Phase 1: Tailscale mesh + vault ORGANIZATION mirror
+- Phase 2–3: move index to vault, Ollama on Ryzen when powered on
