@@ -1,5 +1,7 @@
 """Semantic search over the internal Gnomad index."""
 
+from __future__ import annotations
+
 from internal.config import (
     DEFAULT_MATCH_COUNT,
     EMBEDDING_MODEL,

@@ -7,6 +7,8 @@ on the `embedding` field — see internal/firebase/setup-index.sh.
 
 from __future__ import annotations
 
+from __future__ import annotations
+
 import hashlib
 import os
 from dataclasses import dataclass
