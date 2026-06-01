@@ -1,0 +1,21 @@
+# External distributable RAG — user configuration
+# Copy to external/config.yaml and edit.
+
+workspace_root: ~/Documents/my-knowledge-base
+
+embedding_model: nomic-embed-text
+chunk_size: 500
+chunk_overlap: 50
+
+# Separate Firestore collection from internal Gnomad index
+firestore_collection: workspace_rag_external
+
+indexed_extensions:
+  - .md
+  - .txt
+
+excluded_dirs:
+  - node_modules
+  - .git
+  - .venv
+  - __pycache__

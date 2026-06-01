@@ -1,0 +1,56 @@
+# Workspace RAG — Agent Directives
+
+## Identity
+You are working in **Workspace RAG**, a semantic search pipeline that indexes the entire ORGANIZATION workspace using Ollama embeddings and Supabase pgvector, enabling natural-language queries across all projects and documents.
+This project is part of the Gnomad Enterprise workspace at `/mnt/SteamDrive/ORGANIZATION/`.
+
+## Session Start Protocol (MANDATORY)
+1. Read `.agents/LOGS/SESSION_STATE.md` FIRST — this is your context from the last session.
+2. If stale or missing, read the latest `.agents/LOGS/SESSIONS/HANDOFF_*.md`.
+3. Run `git log -3 --oneline` to verify state matches reality.
+
+## Stack
+- **Framework**: Click CLI + watchdog file watcher
+- **Language**: Python 3.11+
+- **Embeddings**: Ollama (local models)
+- **Vector DB**: Supabase (pgvector)
+- **Tokenizer**: tiktoken
+- **UI**: Rich (terminal output)
+
+## Key Commands
+- Install: `pip install -r requirements.txt`
+- Internal index: `python internal/cli.py index`
+- Internal search: `python internal/cli.py search "term" --limit 10`
+- Internal watch: `python internal/cli.py watch`
+
+## Conventions
+- Flat modules under `internal/` and `shared/`
+- Config centralized in `internal/config.py` (Gnomad) or `external/config.yaml` (product)
+- Chunking logic uses tiktoken for token-aware splits
+- Rich console for all terminal output (tables, progress bars)
+
+## Agent Infrastructure
+- `AGENTS.md` — Agent roster and responsibilities
+- `.agents/CHRONICLER.md` — Session memory protocol (follow trigger rules)
+- `.agents/PROJECT_SOP.md` — Full build/test/deploy procedures
+- `.agents/SKILLS/` — Evolving skill files (update when you learn something)
+- `.agents/DECISIONS/` — Log architectural decisions here
+
+## Cross-Project Resources
+- Swarm Core: `/mnt/SteamDrive/ORGANIZATION/02_ai_engineering/gnomad-swarm-core/`
+- RAG Search: `/mnt/SteamDrive/ORGANIZATION/02_ai_engineering/workspace-rag/` (this project)
+- VAULT (secrets): `/mnt/SteamDrive/ORGANIZATION/03_admin_finance/VAULT/`
+- Full workspace map: `/mnt/SteamDrive/ORGANIZATION/WORKSPACE.md`
+- **Skill Library**: `/mnt/SteamDrive/ORGANIZATION/SKILL_LIBRARY/` — 573 reusable skills, recipes, and patterns. See `SKILL_LIBRARY/README.md` for the catalog. Orchestrators can pull relevant skills into `.agents/SKILLS/` when beneficial.
+
+## Chronicler Protocol
+At checkpoints ("save session"), end of day ("done for the day"), or after git push:
+1. Update `.agents/LOGS/SESSION_STATE.md`
+2. Append to today's `.agents/LOGS/SESSIONS/HANDOFF_YYYY-MM-DD.md`
+See `.agents/CHRONICLER.md` for full trigger rules.
+
+## Self-Evolution
+When you discover a better pattern or solve a hard problem, capture it:
+1. Append to `.agents/SKILLS/LEARNING_LOG.md`
+2. Create/update a skill file in `.agents/SKILLS/`
+See `.agents/SKILLS/SELF_EVOLUTION.md` for the full protocol.

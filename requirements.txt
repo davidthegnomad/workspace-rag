@@ -1,0 +1,9 @@
+firebase-admin>=6.5.0
+google-cloud-firestore>=2.19.0
+ollama
+watchdog
+tiktoken
+rich
+click
+python-dotenv
+pyyaml>=6.0
