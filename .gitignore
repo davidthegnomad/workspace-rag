@@ -52,3 +52,7 @@ external/config.yaml
 .DS_Store
 .idea/
 .vscode/
+
+# Local run logs
+.agents/LOGS/index-run.log
+.agents/LOGS/index-run.pid
