@@ -48,7 +48,13 @@ Both can live in one Firebase project without collision.
 
 ## Agent integration (internal)
 
-Swarm agents should call `python internal/cli.py search "..."` or import `internal.query.search()` directly. Planned: `RAG_QUERY` skill in gnomad-swarm-core.
+Swarm agents should follow [AI_AGENT_GUIDE.md](./AI_AGENT_GUIDE.md):
+
+- CLI: `python internal/cli.py search "..."` with optional `--domain`, `--type`, `--project`
+- Python: `from internal.query import search, search_by_domain, search_by_type`
+- Planned: `RAG_QUERY` skill in gnomad-swarm-core
+
+Human-facing overview: [HUMAN_GUIDE.md](./HUMAN_GUIDE.md)
 
 ## Re-index behavior
 
