@@ -1,5 +1,9 @@
 # Tech Stack — Distribution & Scaling
 
+## Public default
+
+Anyone indexing their own folder uses a local SQLite file: vectors for meaning, FTS5 (BM25) for exact words, merged with reciprocal rank fusion. Embeddings stay in Ollama. Firebase is optional (`store: firestore`).
+
 ## Current stack (v1)
 
 | Component | Technology | Distribution fit | Scale notes |

@@ -1,6 +1,21 @@
 import tiktoken
 
 
+def _overlap_tail(words: list[str], overlap: int, enc) -> list[str]:
+    if overlap <= 0 or not words:
+        return []
+    kept = []
+    tokens = 0
+    for word in reversed(words):
+        word_tokens = len(enc.encode(word))
+        if kept and tokens + word_tokens > overlap:
+            break
+        kept.append(word)
+        tokens += word_tokens
+    kept.reverse()
+    return kept
+
+
 def chunk_document(
     content: str,
     chunk_size: int = 500,
@@ -38,9 +53,8 @@ def chunk_document(
                 word_tokens = len(enc.encode(word))
                 if sub_tokens + word_tokens > chunk_size and sub_chunk:
                     chunks.append(" ".join(sub_chunk))
-                    keep = max(1, len(sub_chunk) // 4)
-                    sub_chunk = sub_chunk[-keep:]
-                    sub_tokens = len(enc.encode(" ".join(sub_chunk)))
+                    sub_chunk = _overlap_tail(sub_chunk, overlap, enc)
+                    sub_tokens = len(enc.encode(" ".join(sub_chunk))) if sub_chunk else 0
                 sub_chunk.append(word)
                 sub_tokens += word_tokens
             if sub_chunk:

@@ -44,6 +44,7 @@ __pycache__/
 
 # External user config (keep example)
 external/config.yaml
+.workspace-rag/
 
 # =============================================================================
 # OS / IDE

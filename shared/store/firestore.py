@@ -7,11 +7,8 @@ on the `embedding` field — see internal/firebase/setup-index.sh.
 
 from __future__ import annotations
 
-from __future__ import annotations
-
 import hashlib
 import os
-from dataclasses import dataclass
 from typing import Any
 
 import firebase_admin
@@ -19,23 +16,7 @@ from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
 
-
-@dataclass
-class SearchResult:
-    content: str
-    source_path: str
-    domain: str
-    project: str
-    doc_type: str
-    similarity: float
-    title: str
-
-    def __str__(self) -> str:
-        return (
-            f"[{self.similarity:.2f}] {self.source_path}\n"
-            f"  Type: {self.doc_type} | Project: {self.project}\n"
-            f"  {self.content[:200]}..."
-        )
+from shared.store.results import SearchResult
 
 
 def _chunk_doc_id(source_path: str, chunk_index: int) -> str:
@@ -129,6 +110,7 @@ class FirestoreVectorStore:
         limit: int = 10,
         threshold: float = 0.7,
         filters: dict[str, str] | None = None,
+        query_text: str = "",
     ) -> list[SearchResult]:
         """
         Semantic search using Firestore find_nearest (COSINE).

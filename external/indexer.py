@@ -1,4 +1,4 @@
-"""Index user workspace documents into Firestore (external product)."""
+"""Index a folder of notes. SQLite by default. Firestore only when config says so."""
 
 import hashlib
 from pathlib import Path
@@ -8,24 +8,16 @@ from rich.progress import Progress
 
 from external.config import get_settings
 from external.discover import discover_documents, extract_metadata
+from external.store import open_store
 from shared.chunking import chunk_document
 from shared.embeddings import generate_embedding
-from shared.store.firestore import FirestoreVectorStore
 
 
 def content_hash(content: str) -> str:
     return hashlib.sha256(content.encode()).hexdigest()[:16]
 
 
-def get_store(settings: dict) -> FirestoreVectorStore:
-    from external.config import FIREBASE_PROJECT_ID
-    return FirestoreVectorStore(
-        collection=settings["firestore_collection"],
-        project_id=FIREBASE_PROJECT_ID or None,
-    )
-
-
-def index_document(path: Path, root: Path, store: FirestoreVectorStore, settings: dict, stats: dict) -> None:
+def index_document(path: Path, root: Path, store, settings: dict, stats: dict) -> None:
     try:
         content = path.read_text(encoding="utf-8", errors="replace")
     except Exception as e:
@@ -59,13 +51,19 @@ def index_document(path: Path, root: Path, store: FirestoreVectorStore, settings
     stats["docs_indexed"] += 1
 
 
-def run_full_index(config_path: Path | None = None) -> None:
+def run_full_index(config_path: Path | None = None, root: Path | None = None) -> None:
     console = Console()
     settings = get_settings(config_path)
+    if root is not None:
+        settings["workspace_root"] = Path(root).expanduser().resolve()
+        if settings.get("store") != "firestore":
+            settings["index_path"] = settings["workspace_root"] / ".workspace-rag" / "index.sqlite"
     root = settings["workspace_root"]
-    store = get_store(settings)
+    store = open_store(settings)
 
-    console.print(f"[bold]Workspace root:[/bold] {root}")
+    console.print(f"[bold]Folder:[/bold] {root}")
+    if settings.get("store") == "sqlite":
+        console.print(f"[bold]Index:[/bold] {settings['index_path']}")
     documents = discover_documents(root, settings["indexed_extensions"], settings["excluded_dirs"])
     console.print(f"Found [green]{len(documents)}[/green] documents to index")
 

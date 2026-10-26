@@ -16,6 +16,7 @@ FIREBASE_PROJECT_ID = os.environ.get("FIREBASE_PROJECT_ID", "")
 INDEXED_EXTENSIONS = {".md", ".txt"}
 EXCLUDED_DIR_NAMES = {
     "node_modules", ".git", ".venv", "__pycache__", "dist", "build", ".next",
+    ".workspace-rag",
 }
 
 
@@ -38,8 +39,17 @@ def resolve_workspace_root(cfg: dict | None = None) -> Path:
 
 def get_settings(config_path: Path | None = None) -> dict:
     cfg = load_config(config_path)
+    root = resolve_workspace_root(cfg)
+    store = cfg.get("store", "sqlite")
+    index_path = cfg.get("index_path")
+    if index_path:
+        index_path = Path(index_path).expanduser().resolve()
+    else:
+        index_path = root / ".workspace-rag" / "index.sqlite"
     return {
-        "workspace_root": resolve_workspace_root(cfg),
+        "workspace_root": root,
+        "store": store,
+        "index_path": index_path,
         "embedding_model": cfg.get("embedding_model", EMBEDDING_MODEL),
         "chunk_size": cfg.get("chunk_size", CHUNK_SIZE),
         "chunk_overlap": cfg.get("chunk_overlap", CHUNK_OVERLAP),

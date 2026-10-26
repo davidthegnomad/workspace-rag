@@ -1,14 +1,14 @@
-# External distributable RAG — user configuration
-# Copy to external/config.yaml and edit.
+# Copy to external/config.yaml, or skip this file and pass --root.
 
-workspace_root: ~/Documents/my-knowledge-base
+workspace_root: ~/Documents/my-notes
+
+# sqlite is the default. The index is a file in the folder you index.
+# No Firebase account.
+store: sqlite
 
 embedding_model: nomic-embed-text
 chunk_size: 500
 chunk_overlap: 50
-
-# Separate Firestore collection from internal Gnomad index
-firestore_collection: workspace_rag_external
 
 indexed_extensions:
   - .md
@@ -19,3 +19,8 @@ excluded_dirs:
   - .git
   - .venv
   - __pycache__
+  - .workspace-rag
+
+# Optional cloud index. Only if you already run Firebase:
+# store: firestore
+# firestore_collection: workspace_rag_external

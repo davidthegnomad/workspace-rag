@@ -1,25 +1,42 @@
-# External — Distributable Workspace RAG
+# External — a RAG for any folder
 
-Semantic search product for **any** document folder. Uses the same `shared/` core as internal but with user-owned configuration.
+Point it at Markdown and text you already have. Embeddings run in Ollama. The index is a SQLite file next to those notes. Nothing is uploaded.
 
 ## Setup
 
 ```bash
 cd workspace-rag
-pip install -r requirements.txt
-cp external/config.example.yaml external/config.yaml
-cp ../.env.example ../.env
-# Edit config.yaml (workspace_root) and .env (Firebase credentials)
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-local.txt
 ollama pull nomic-embed-text
-./internal/firebase/setup-index.sh   # set FIRESTORE_COLLECTION=workspace_rag_external
 ```
 
 ## Commands
 
 ```bash
-python external/cli.py index
-python external/cli.py search "deployment checklist"
-python external/cli.py status
+python external/cli.py index --root ~/Documents/my-notes
+python external/cli.py search "deployment checklist" --root ~/Documents/my-notes
+python external/cli.py status --root ~/Documents/my-notes
 ```
 
-See [ROADMAP.md](./ROADMAP.md) for product phases.
+Or copy `config.example.yaml` to `config.yaml`, set `workspace_root`, and leave `--root` off.
+
+## What it searches
+
+- Meaning: cosine similarity on the Ollama embedding
+- Exact words: SQLite FTS5 (BM25)
+- The two lists are merged with reciprocal rank fusion, so a rare code or name is not dropped just because the vector missed it
+
+Notes are split on Markdown headings, then on a token limit, with overlap so a sentence is not cut away from its heading.
+
+## Firestore
+
+Leave this off unless you already run Firebase. In `config.yaml`:
+
+```yaml
+store: firestore
+firestore_collection: workspace_rag_external
+```
+
+Then install `requirements.txt` and set `FIREBASE_PROJECT_ID` and `GOOGLE_APPLICATION_CREDENTIALS` in `.env`.

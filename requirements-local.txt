@@ -1,0 +1,6 @@
+ollama
+rich
+click
+python-dotenv
+pyyaml>=6.0
+tiktoken
